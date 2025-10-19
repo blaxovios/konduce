@@ -1,0 +1,24 @@
+[package]
+name = "konduce"
+version = "0.1.0"
+edition = "2024"
+authors = ["Konstantinos Skepetaris <https://github.com/blaxovios>"]
+description = "A command line tool for orchestrating backend services."
+license = "LICENSE.txt"
+repository = "https://github.com/blaxovios/konduce"
+homepage = "https://github.com/blaxovios/konduce"
+readme = "README.md"
+
+[dependencies]
+async-trait = "0.1.89"
+anyhow = "1.0.75"
+clap = {version = "4.3.23", features = ["derive"]}
+sqlx = { version = "0.8.6", features = [ "runtime-tokio", "sqlite", "postgres", "chrono", "ipnetwork", "uuid"] }
+serde = {version = "1.0.228", features=["derive"]}
+colored = "3.0.0"
+inquire = "0.9.1"
+tokio = {version="1.48.0", features=["full"]}
+chrono = "0.4.42"
+clipboard = { version = "0.5.0"}
+dotenv = {version="0.15.0"}
+human-panic = "2.0.3"
