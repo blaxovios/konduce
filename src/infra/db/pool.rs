@@ -2,6 +2,7 @@ use sqlx::postgres::PgPoolOptions;
 use sqlx::{PgPool, query};
 use std::time::Duration;
 use anyhow::Result;
+use tracing::info;
 
 #[derive(Clone)]
 pub struct Db(pub PgPool);
@@ -19,7 +20,7 @@ impl Db {
             .connect(&url)
             .await?;
 
-        println!("Database pool ready");
+        info!("Database pool ready");
         Ok(Db(pool))
     }
 }
