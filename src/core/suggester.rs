@@ -1,34 +1,32 @@
 /// Simple rust filter map function to suggest commands based on user input.
+use colored::Colorize;
+use anyhow::Result;
+
 use crate::core::did_you_mean::did_you_mean;
+use crate::constants::CMD_COMMANDS;
+use crate::handlers::db_handler;
+use crate::infra::db::pool::Db;
 
 
-pub fn suggester(val: &str) -> Result<Vec<String>, Box<dyn std::error::Error + Send + Sync>> {
-    let command_suggestions: Vec<&'static str> = vec![
-        "get",
-        "set",
-        "delete",
-        "list",
-        "search",
-        "help",
-        "exit"
-    ];
-
-    let lowered_suggestion = val.to_ascii_lowercase();
-
-    let out:Vec<String> = command_suggestions
-        .iter()
-        .copied() // &str (not &&str)
-        .filter(|s| s.to_ascii_lowercase().contains(&lowered_suggestion))
-        .map(|s| s.to_string())
-        .collect();
-
-    // If no substring hits, fall back to did_you_mean
-    if out.is_empty()
-    {
-        if let Some((best, _dist)) = did_you_mean(&lowered_suggestion, command_suggestions) {
-            return Ok(vec![best.to_string()]);
+pub async fn dispatch_or_suggest(db: &Db, cmd: String) -> Result<()> {
+    match cmd.as_str() {
+        "get" => {
+            let rows = db_handler::get(db).await?;
+            println!("{} {}", "Rows:".green(), rows.len());
+            Ok(())
+        }
+        "exit" => {
+            println!("{}", "Exiting…".yellow());
+            Ok(())
+        }
+        _ => {
+            // Unknown: suggest the closest known command
+            if let Some((best, _d)) = did_you_mean(&cmd, CMD_COMMANDS.iter().copied()) {
+                println!("{} {}", "Did you mean:".yellow(), best.green());
+            } else {
+                println!("Unknown command: {cmd}");
+            }
+            Ok(())
         }
     }
-
-    Ok(out)
 }

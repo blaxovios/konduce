@@ -60,6 +60,7 @@ pub async fn read_logs_from_db(db: &Db) -> Result<Vec<Entry>, Error> {
         r#"
         SELECT id, occurred_at, user_id, username, ip, user_agent, session_id
         FROM ops.client_connect_log
+        ORDER BY occurred_at DESC
         LIMIT 10
         "#,
     )

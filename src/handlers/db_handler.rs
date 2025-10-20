@@ -12,7 +12,7 @@ pub async fn get(db: &Db) -> Result<Vec<Entry>, Error> {
     );
     let logs = read_logs_from_db(db).await?;
     println!("{}",
-        "Values from DB:".green()
+        "Latest 10 values from database:".green()
     );
     for (i, log) in logs.iter().enumerate() {
         println!("{:>3}. {}", i + 1, log); // uses Display impl

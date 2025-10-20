@@ -2,6 +2,7 @@ use clap::Parser;
 use human_panic::setup_panic;
 use colored::Colorize;
 use anyhow::Result;
+use inquire::{InquireError, Text};
 
 mod infra;
 mod utils;
@@ -10,8 +11,7 @@ mod core;
 mod constants;
 
 use crate::infra::db::pool::Db;
-use crate::core::suggester;
-use crate::utils::cli_utils::dispatch;
+use crate::core::suggester::dispatch_or_suggest;
 
 
 #[derive(Parser, Debug)]
@@ -28,36 +28,40 @@ async fn main() -> Result<()> {
     let _ = dotenv::dotenv();
 
     let db = Db::connect_from_env().await?;
-
     let args = Arguments::parse();
 
-    // If a command is provided, run it once; otherwise open an interactive loop
+    // One-shot mode
     if let Some(cmd) = args.cmd {
-        dispatch(&db, cmd).await?;
-        return Ok(());
+        return dispatch_or_suggest(&db, cmd).await;
     }
 
-    // Simple REPL: keep asking until user types "exit"
+    // REPL mode
     loop {
-        let input = inquire::Text::new("Enter command")
+        let input = Text::new("Enter command")
             .with_help_message("try: get | exit")
-            .with_autocomplete(&suggester::suggester)
             .prompt();
 
         let cmd = match input {
             Ok(s) => s.trim().to_string(),
-            Err(_) => {
+            Err(InquireError::OperationCanceled | InquireError::OperationInterrupted) => {
                 println!("{}", "Exiting…".yellow());
                 break;
             }
+            Err(e) => {
+                eprintln!("Prompt error: {e}");
+                continue;
+            }
         };
 
+        if cmd.is_empty() {
+            continue;
+        }
         if cmd.eq_ignore_ascii_case("exit") {
             println!("{}", "Exiting…".yellow());
             break;
         }
 
-        if let Err(e) = dispatch(&db, cmd).await {
+        if let Err(e) = dispatch_or_suggest(&db, cmd).await {
             eprintln!("Error: {e}");
         }
     }
