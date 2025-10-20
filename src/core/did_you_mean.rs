@@ -3,7 +3,7 @@ use rapidfuzz::distance::levenshtein;
 use crate::constants::LEVENSHTEIN_MAX_DISTANCE;
 
 
-pub fn did_you_mean<'l>(input: &str, options: impl IntoIterator<Item = &'l str>) -> Option<(&'l str, usize)> {
+pub fn did_you_mean<'a>(input: &str, options: impl IntoIterator<Item = &'a str>) -> Option<(&'a str, usize)> {
     let needle = input.to_ascii_lowercase();
 
     // Find the closest candidate; only return it if it's within the threshold.

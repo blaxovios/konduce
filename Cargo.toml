@@ -24,3 +24,4 @@ chrono = "0.4.42"
 clipboard = { version = "0.5.0"}
 dotenv = {version="0.15.0"}
 human-panic = "2.0.3"
+urlencoding = "2.1.3"

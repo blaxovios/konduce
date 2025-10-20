@@ -10,7 +10,7 @@ mod handlers;
 mod core;
 mod constants;
 
-use crate::infra::db::pool::Db;
+use crate::infra::db::pool::connect_db_with_retry;
 use crate::core::suggester::dispatch_or_suggest;
 
 
@@ -27,7 +27,7 @@ async fn main() -> Result<()> {
     setup_panic!();
     let _ = dotenv::dotenv();
 
-    let db = Db::connect_from_env().await?;
+    let db = connect_db_with_retry().await?;
     let args = Arguments::parse();
 
     // One-shot mode
