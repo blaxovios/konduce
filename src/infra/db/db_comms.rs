@@ -25,11 +25,11 @@ impl fmt::Display for Entry {
             .unwrap_or_else(|| "<null>".to_string());
 
         let username = self.username
-            .as_deref()                 // Option<&str>
+            .as_deref()
             .unwrap_or("<null>");
 
         let ip = self.ip
-            .as_ref()                   // Option<&IpNetwork>
+            .as_ref()
             .map(ToString::to_string)
             .unwrap_or_else(|| "<null>".to_string());
 

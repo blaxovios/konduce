@@ -8,7 +8,7 @@ use crate::utils::utils::{provide_db_credentials_url};
 
 pub async fn prompt_db_construction() -> Result<String, Box<dyn StdError>> {
     // Helper to prompt once with consistent handling
-    let mut ask = |label: &str, help: &str| -> Result<String, Box<dyn StdError>> {
+    let ask = |label: &str, help: &str| -> Result<String, Box<dyn StdError>> {
         match Text::new(label).with_help_message(help).prompt() {
             Ok(s) => Ok(s.trim().to_string()),
             Err(InquireError::OperationCanceled | InquireError::OperationInterrupted) => {

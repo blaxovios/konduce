@@ -54,7 +54,7 @@ impl DatabaseConnection for Db {
     async fn execute(&self, query_str: &str) -> Result<(), sqlx::Error> {
         query(query_str)
             .execute(&self.0)
-            .await?; // Await the async future here
+            .await?;
         Ok(())
     }
 }

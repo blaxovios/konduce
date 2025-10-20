@@ -30,12 +30,12 @@ async fn main() -> Result<()> {
     let db = connect_db_with_retry().await?;
     let args = Arguments::parse();
 
-    // One-shot mode
+    // One-shot mode; if a command is provided, execute it
     if let Some(cmd) = args.cmd {
         return dispatch_or_suggest(&db, cmd).await;
     }
 
-    // REPL mode
+    // Interactive mode
     loop {
         let input = Text::new("Enter command")
             .with_help_message("try: get | exit")
